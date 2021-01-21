@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const CheckedAnswerRQ = mongoose.Schema({
+    gamesID: {
+        type: String,
+        required: true
+    },
     player: {
         type: String,
         required: true
