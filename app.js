@@ -1,6 +1,8 @@
 //GuestWhatNodeService
 const express = require('express');
 const app = express();
+const mongoose = require('mongoose');
+require('dotenv/config');
 
 //Router
 const dockerRouter = require('./Router/docker');
@@ -14,9 +16,15 @@ app.use(bodyParser.json());
 app.use('/Docker', dockerRouter);
 app.use('/GameRoom', gameRoomRouter);
 
-const server = require('http').Server(app);
-const port = process.env.PORT || 3000;
+// const server = require('http').Server(app);
+// const port = process.env.PORT || 3000;
 
-server.listen(port, function() {
-    console.log(`listening on port ${port}`);
-  });
+//Connet to DB
+const uris = process.env.DB_CONNECTION;
+mongoose.connect(uris ,{useUnifiedTopology: true, useNewUrlParser: true} ,() => {
+  console.log('Connect to DB');
+});
+
+app.listen(3000, function(req, res)  {
+console.log('Example app listening on port 3000!');
+});

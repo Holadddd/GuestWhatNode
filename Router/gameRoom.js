@@ -1,22 +1,27 @@
 const express = require('express');
 const router = express.Router();
 //Model
-const GameAnswer = require('../Model/GameRoom/GameAnswerRQ');
+const SetGameAnswer = require('../Model/GameRoom/SetGameAnswerRQ');
 const AnswerCheckRQ = require('../Model/GameRoom/AnswerCheckRQ');
 const AnswerCheckRP = require('../Model/GameRoom/AnswerCheckRP');
 
-// router.get('/', (req, res) => {
-//     res.send('This GameRoom.');
-// });
 
+//Show the docker
+router.get('/', (req, res) => {
+    res.send('This GameRoom.');
+});
+
+//G5-AnswerCheck
 router.get('/AnswerCheck', async (req, res) => {
     let body = req.body
     let answerCheckRQ = new AnswerCheckRQ ({
+        roomID: body.roomID,
         player: body.player,
         checkNumber: body.checkNumber
     })
-    // query the answer from another user
+    // query the answer from another user by gamesID
 
+    //Do the math
     let answerCheckRP = new AnswerCheckRP({
         guestNumber: answerCheckRQ.checkNumber,
         correctLocate: 1,
@@ -25,8 +30,28 @@ router.get('/AnswerCheck', async (req, res) => {
     res.send(answerCheckRP);
 });
 
+//P3-SetGameAnswer
+router.post('/SetGameAnswer', async (req, res) => {
+    const reqBody = req.body;
 
+    console.log(reqBody);
 
+    const setGameAnswer = new SetGameAnswer({
+        roomID: reqBody.roomID,
+        player: reqBody.player,
+        setsAnswer: reqBody.setsAnswer
+    });
+
+    try {
+        const saveGameAnswer = await setGameAnswer.save()
+        res.send(saveGameAnswer);
+        console.log('Did save');
+    } catch (err) {
+        res.json({message: err});
+        console.log('fail');
+        console.log(err);
+    }
+});
 
 
 

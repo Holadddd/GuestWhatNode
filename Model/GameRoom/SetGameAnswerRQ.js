@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
-const GameAnswer = mongoose.Schema({
+const SetGameAnswerSchema = mongoose.Schema({
+    roomID: {
+        type: String,
+        required: true
+    },
     player: {
         type: String,
         required: true
@@ -11,4 +15,4 @@ const GameAnswer = mongoose.Schema({
     }
 });
 //Name this model
-module.exports = mongoose.model('./GameAnswer', GameAnswer);
+module.exports = mongoose.model('SetGameAnswer', SetGameAnswerSchema);
