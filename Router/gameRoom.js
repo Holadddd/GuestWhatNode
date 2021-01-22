@@ -1,5 +1,7 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
+
 //Model
 const SetGameAnswer = require('../Model/GameRoom/SetGameAnswerRQ');
 const AnswerCheckRQ = require('../Model/GameRoom/AnswerCheckRQ');

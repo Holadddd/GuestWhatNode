@@ -16,15 +16,16 @@ app.use(bodyParser.json());
 app.use('/Docker', dockerRouter);
 app.use('/GameRoom', gameRoomRouter);
 
-// const server = require('http').Server(app);
-// const port = process.env.PORT || 3000;
+const server = require('http').Server(app);
+const port = process.env.PORT || 3000;
 
 //Connet to DB
 const uris = process.env.DB_CONNECTION;
-mongoose.connect(uris ,{useUnifiedTopology: true, useNewUrlParser: true} ,() => {
+mongoose.connect(uris ,{useUnifiedTopology: true, useNewUrlParser: true} ,(err, db) => {
+  
   console.log('Connect to DB');
 });
 
-app.listen(3000, function(req, res)  {
+server.listen(port, function(req, res)  {
 console.log('Example app listening on port 3000!');
 });
