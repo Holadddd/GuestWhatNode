@@ -21,8 +21,9 @@ router.get('/AnswerCheck', async (req, res) => {
         player: body.player,
         checkNumber: body.checkNumber
     })
-    // query the answer from another user by gamesID
-
+    // query the answer from GameRoomInfo by player
+    const setGameAnswer = await SetGameAnswer.find({roomID: answerCheckRQ.roomID})
+    console.log(setGameAnswer)
     //Do the math
     let answerCheckRP = new AnswerCheckRP({
         guestNumber: answerCheckRQ.checkNumber,
