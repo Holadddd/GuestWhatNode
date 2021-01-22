@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 
 const GameRoomInfoSchema = mongoose.Schema({
-    roomID: {
-        type: String,
-        required: false
-    },
+    //Take mongoDB _id as roomId 
+    // roomID: {
+    //     type: String,
+    //     required: false
+    // },
     hostPlayer: {
         type: String,
         required: true

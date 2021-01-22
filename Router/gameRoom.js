@@ -3,17 +3,43 @@ const mongoose = require('mongoose');
 const router = express.Router();
 
 //Model
+const GameRoomInfo = require('../Model/GameRoom/GameRoomInfo');
+
 const CreateGameRoomRQ = require('../Model/GameRoom/CreateGameRoomRQ');
 const CreateGameRoomRP = require('../Model/GameRoom/CreateGameRoomRP');
-const GameRoomInfo = require('../Model/GameRoom/GameRoomInfo');
+
+const JoinGameRoomRQ = require('../Model/GameRoom/JoinGameRoomRQ');
+const JoinGameRoomRP = require('../Model/GameRoom/JoinGameRoomRP');
+
 const SetGameAnswer = require('../Model/GameRoom/SetGameAnswerRQ');
 const AnswerCheckRQ = require('../Model/GameRoom/AnswerCheckRQ');
 const AnswerCheckRP = require('../Model/GameRoom/AnswerCheckRP');
+const { json } = require('body-parser');
 
 
 //Show the docker
 router.post('/');
-
+//-----------------------------GET---------------------------//
+//G5-AnswerCheck
+router.get('/AnswerCheck', async (req, res) => {
+    let body = req.body
+    let answerCheckRQ = new AnswerCheckRQ ({
+        roomID: body.roomID,
+        player: body.player,
+        checkNumber: body.checkNumber
+    })
+    // query the answer from GameRoomInfo by player
+    const setGameAnswer = await SetGameAnswer.find({roomID: answerCheckRQ.roomID})
+    console.log(setGameAnswer)
+    //Do the math
+    let answerCheckRP = new AnswerCheckRP({
+        guestNumber: answerCheckRQ.checkNumber,
+        correctLocate: 1,
+        includedNumber: 4
+    })
+    res.send(answerCheckRP);
+});
+//-----------------------------POST---------------------------//
 //P2-Create GameRoom
 router.post('/CreateGameRoom', async (req, res) => {
     let hostPlayer = req.body.hostPlayer
@@ -39,27 +65,41 @@ router.post('/CreateGameRoom', async (req, res) => {
     }
 });
 
-//G5-AnswerCheck
-router.get('/AnswerCheck', async (req, res) => {
-    let body = req.body
-    let answerCheckRQ = new AnswerCheckRQ ({
-        roomID: body.roomID,
-        player: body.player,
-        checkNumber: body.checkNumber
-    })
-    // query the answer from GameRoomInfo by player
-    const setGameAnswer = await SetGameAnswer.find({roomID: answerCheckRQ.roomID})
-    console.log(setGameAnswer)
-    //Do the math
-    let answerCheckRP = new AnswerCheckRP({
-        guestNumber: answerCheckRQ.checkNumber,
-        correctLocate: 1,
-        includedNumber: 4
-    })
-    res.send(answerCheckRP);
+//P3-Join GameRoom
+router.post('/JoinGameRoom', async (req, res) => {
+    const reqBody = req.body
+    //1.UpdateGameRoomInfo
+    try {
+        const updateGameRoomInfo = await GameRoomInfo.updateOne(
+            //Find the room with roomID
+            {_id: reqBody.roomID},
+            //Update Info
+            {
+                $set:{guessPlayer: reqBody.guessPlayer}
+            }
+        )
+        //2.Find the updated GameRoomInfo
+        try {
+            const jsonData = await GameRoomInfo.findOne({_id: reqBody.roomID}, (err, doc) => {
+                const joinGameRoomRP = new JoinGameRoomRP ({
+                    //The Room ID is GameRoomInfo default id
+                    roomID: doc._id,
+                    hostPlayer: doc.hostPlayer,
+                    guessPlayer: doc.guessPlayer
+                })
+                res.send(joinGameRoomRP)
+                console.log('Did Join GameRoom');
+            })
+        } catch(err) {
+            console.log(err);
+        res.json({message: err});
+        }
+    } catch(err) {
+        console.log(err);
+        res.json({message: err});
+    }
 });
-
-//P3-SetGameAnswer
+//P4-SetGameAnswer
 router.post('/SetGameAnswer', async (req, res) => {
     const reqBody = req.body;
 
@@ -81,8 +121,5 @@ router.post('/SetGameAnswer', async (req, res) => {
         console.log(err);
     }
 });
-
-
-
 
 module.exports = router;
