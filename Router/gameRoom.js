@@ -3,14 +3,40 @@ const mongoose = require('mongoose');
 const router = express.Router();
 
 //Model
+const CreateGameRoomRQ = require('../Model/GameRoom/CreateGameRoomRQ');
+const CreateGameRoomRP = require('../Model/GameRoom/CreateGameRoomRP');
+const GameRoomInfo = require('../Model/GameRoom/GameRoomInfo');
 const SetGameAnswer = require('../Model/GameRoom/SetGameAnswerRQ');
 const AnswerCheckRQ = require('../Model/GameRoom/AnswerCheckRQ');
 const AnswerCheckRP = require('../Model/GameRoom/AnswerCheckRP');
 
 
 //Show the docker
-router.get('/', (req, res) => {
-    res.send('This GameRoom.');
+router.post('/');
+
+//P2-Create GameRoom
+router.post('/CreateGameRoom', async (req, res) => {
+    let hostPlayer = req.body.hostPlayer
+    //Create new room
+    const gameRoomInfo = new GameRoomInfo ({
+        hostPlayer: hostPlayer
+    })
+
+    try {
+        //Store room in db
+        const saveGameRoomInfo = await gameRoomInfo.save();
+
+        const createGameRoomRP = new CreateGameRoomRP({
+            roomID: saveGameRoomInfo._id,
+            hostPlayer: saveGameRoomInfo.hostPlayer
+        })
+
+        res.send(createGameRoomRP);
+        console.log('Did save');
+    } catch(err) {
+        console.log('fail');
+        res.json({message: err});
+    }
 });
 
 //G5-AnswerCheck
