@@ -4,8 +4,6 @@ const router = express.Router();
 
 const { json } = require('body-parser');
 //Model
-const UserInfo = require('../Model/User/UserInfo');
-const SetUserInfoRQ = require('../Model/User/SetUserInfoRQ');
 
 const GameRoomInfo = require('../Model/GameRoom/GameRoomInfo');
 
@@ -42,23 +40,6 @@ router.get('/AnswerCheck', async (req, res) => {
     res.send(answerCheckRP);
 });
 //-----------------------------POST---------------------------//
-//P1-User register with deviceID and userID 
-router.post('/SetUserInfo', async (req, res) => {
-    const userInfo = new UserInfo({
-        DeviceID: req.body.DeviceID,
-        UserID: req.body.UserID
-    });
-
-    try {
-        const saveUserInfo = await userInfo.save();
-        console.log('Did save');
-        res.send(saveUserInfo)
-    } catch(err) {
-        console.log(err);
-        res.json({message: err});
-    }
-
-});
 
 //P2-Create GameRoom
 router.post('/CreateGameRoom', async (req, res) => {

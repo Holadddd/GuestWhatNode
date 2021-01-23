@@ -7,6 +7,7 @@ require('dotenv/config');
 //Router
 const dockerRouter = require('./Router/docker');
 const gameRoomRouter = require('./Router/gameRoom');
+const userRouter = require('./Router/user');
 
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/Docker', dockerRouter);
 app.use('/GameRoom', gameRoomRouter);
+app.use('/User', userRouter);
 
 const server = require('http').Server(app);
 const port = process.env.PORT || 3000;
