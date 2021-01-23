@@ -38,19 +38,31 @@ router.get('/AnswerCheck', async (req, res) => {
     let body = req.body
     let answerCheckRQ = new AnswerCheckRQ ({
         roomID: body.roomID,
+        isHost: body.isHost,
         player: body.player,
         checkNumber: body.checkNumber
     })
     // query the answer from GameRoomInfo by player
-    const setGameAnswer = await SetGameAnswer.find({roomID: answerCheckRQ.roomID})
-    console.log(setGameAnswer)
-    //Do the math
-    let answerCheckRP = new AnswerCheckRP({
-        guestNumber: answerCheckRQ.checkNumber,
-        correctLocate: 1,
-        includedNumber: 4
-    })
-    res.send(answerCheckRP);
+    try {
+        const setGameAnswer = await GameRoomInfo.find({_id: answerCheckRQ.roomID},(err, doc)=>{
+            
+            const roomInfo = doc[0]
+            console.log(roomInfo);
+            if (answerCheckRQ.isHost) {
+                const answerCheckRP = numberChecker(roomInfo.guessPlayerAnswer, answerCheckRQ.checkNumber);
+                res.send(answerCheckRP);
+            } else {
+                const answerCheckRP = numberChecker(roomInfo.hostPlayerAnswer, answerCheckRQ.checkNumber);
+                res.send(answerCheckRP);
+            }
+        })
+    } catch(err) {
+        console.log('fail');
+        res.json({message: err});
+    }
+    
+    
+    // res.send(answerCheckRP);
 });
 //-----------------------------POST---------------------------//
 
@@ -152,3 +164,30 @@ router.post('/SetGameAnswer', async (req, res) => {
 })
 
 module.exports = router;
+
+function numberChecker(answer, check) {
+    let answerString = String(answer)
+    let checkString = String(check)
+
+    var correctLocate = 0;
+    var includedNumber = 0;
+
+    for (s in checkString){
+        let checkTmp = checkString[s]
+        let answerTmp = answerString[s]
+        if (answerString.includes(checkTmp)) {
+            includedNumber += 1;
+        }
+        if (checkTmp == answerTmp) {
+            correctLocate += 1;
+        }
+    }
+    
+    let resultString = String(correctLocate)+'A'+String(includedNumber-correctLocate)+'B'
+    return new AnswerCheckRP({
+        guestNumber: check,
+        correctLocate: correctLocate,
+        includedNumber: includedNumber,
+        resultString: resultString
+    })
+}

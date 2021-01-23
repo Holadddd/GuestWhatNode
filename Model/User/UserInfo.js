@@ -16,6 +16,10 @@ const UserInfoSchema = mongoose.Schema({
     LossCount: {
         type: Number,
         default: 0
+    },
+    isOnline: {
+        type: Boolean,
+        default: true
     }
 });
 

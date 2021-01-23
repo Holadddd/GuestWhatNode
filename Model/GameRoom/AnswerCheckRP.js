@@ -14,6 +14,10 @@ const CheckedAnswerRP = mongoose.Schema({
     includedNumber: {
         type: Number,
         required: true
+    },
+    resultString: {
+        type: String,
+        required: true
     }
 });
 

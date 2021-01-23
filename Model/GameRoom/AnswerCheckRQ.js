@@ -5,6 +5,10 @@ const CheckedAnswerRQ = mongoose.Schema({
         type: String,
         required: true
     },
+    isHost: {
+        type: Boolean,
+        required: true
+    },
     player: {
         type: String,
         required: true

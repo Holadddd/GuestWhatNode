@@ -17,7 +17,6 @@ router.get('/Info', async (req, res) => {
             DeviceID: userDeviceID
         },
         (err, doc) => {
-
             res.send(doc)
         }) 
     } catch(err) {
