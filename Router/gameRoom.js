@@ -80,7 +80,7 @@ router.post('/JoinGameRoom', async (req, res) => {
         )
         //2.Find the updated GameRoomInfo
         try {
-            const jsonData = await GameRoomInfo.findOne({_id: reqBody.roomID}, (err, doc) => {
+            const _ = await GameRoomInfo.findOne({_id: reqBody.roomID}, (err, doc) => {
                 const joinGameRoomRP = new JoinGameRoomRP ({
                     //The Room ID is GameRoomInfo default id
                     roomID: doc._id,
@@ -103,23 +103,38 @@ router.post('/JoinGameRoom', async (req, res) => {
 router.post('/SetGameAnswer', async (req, res) => {
     const reqBody = req.body;
 
-    console.log(reqBody);
-
     const setGameAnswer = new SetGameAnswer({
         roomID: reqBody.roomID,
+        isHost: reqBody.isHost,
         player: reqBody.player,
         setsAnswer: reqBody.setsAnswer
-    });
+    })
 
     try {
-        const saveGameAnswer = await setGameAnswer.save()
-        res.send(saveGameAnswer);
-        console.log('Did save');
-    } catch (err) {
-        res.json({message: err});
-        console.log('fail');
+        if (setGameAnswer.isHost) {
+            const gameRoomInfo = await GameRoomInfo.updateOne(
+                {_id: setGameAnswer.roomID},
+                {$set: {hostPlayerAnswer: setGameAnswer.setsAnswer}},
+                (err, doc) => {
+                    res.send(doc)
+                    console.log('Set host answer')
+                }
+            )
+            console.log(setGameAnswer.setsAnswer)
+        } else {
+            const gameRoomInfo = await GameRoomInfo.updateOne(
+                {_id: setGameAnswer.roomID},
+                {$set: {guessPlayerAnswer: setGameAnswer.setsAnswer}},
+                (err, doc) => {
+                    res.send(doc)
+                    console.log('Set guess answer')
+                }
+            )
+        }
+    } catch(err) {
         console.log(err);
+        res.json({message: err});
     }
-});
+})
 
 module.exports = router;
