@@ -25,6 +25,10 @@ const GameRoomInfoSchema = mongoose.Schema({
     createTime: {
         type: Date,
         default: Date()
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 });
 //Name this model

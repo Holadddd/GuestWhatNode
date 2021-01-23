@@ -20,6 +20,19 @@ const AnswerCheckRP = require('../Model/GameRoom/AnswerCheckRP');
 //Show the docker
 router.post('/');
 //-----------------------------GET---------------------------//
+//G2-GameRoom List
+router.get('/List', async (req, res) => {
+
+        try {
+            const gameRoomList = await GameRoomInfo.find((err, doc) =>{
+                res.send(doc);
+            })
+        } catch(err) {
+            console.log('fail');
+            res.json({message: err});
+        }
+});
+
 //G5-AnswerCheck
 router.get('/AnswerCheck', async (req, res) => {
     let body = req.body
